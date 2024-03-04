@@ -1,12 +1,13 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { AppService } from './app.service';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(private readonly appService: AppService) { }
 
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  @Get('/fetch-data')
+  async fetchData(): Promise<any> {
+    const url = `https://www.merx.com/public/solicitations/professional-administrative-and-management-support-services-10040`;
+    return this.appService.fetchData(url);
   }
 }

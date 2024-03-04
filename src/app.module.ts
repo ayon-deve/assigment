@@ -23,6 +23,7 @@ import { configuration } from 'config/configuration';
       }),
     }),
     ScheduleModule.forRoot(),
+    WebScrapModule,
     
   ],
   controllers: [AppController],

@@ -2,11 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import axios from 'axios';
 import { Model } from 'mongoose';
-import { ILeads } from 'src/models/item.interface';
+import { IUsers } from 'src/models/item.interface';
 
 @Injectable()
 export class WebScrapService {
-    @InjectModel('leads') private scrapmodal: Model<ILeads>
+    @InjectModel('users') private usersmodal: Model<IUsers>
 
 
     async fetchData(url: string): Promise<any> {
