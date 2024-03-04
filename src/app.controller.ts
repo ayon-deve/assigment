@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { AppService } from './app.service';
 
 @Controller()
@@ -9,5 +9,11 @@ export class AppController {
   async fetchData(): Promise<any> {
     const url = `https://www.merx.com/public/solicitations/professional-administrative-and-management-support-services-10040`;
     return this.appService.fetchData(url);
+  }
+
+
+  @Get('products')
+  getProducts(@Query('product') product: string) {
+    return this.appService.getProducts(product);
   }
 }
