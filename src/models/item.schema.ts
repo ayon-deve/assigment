@@ -1,16 +1,16 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose"
 import * as moment from "moment"
-@Schema({ collection: 'leads' })
-export class Leads {
-    @Prop({ index: -1 })
+@Schema({ collection: 'users' })
+export class Users {
+    @Prop()
     name: string;
-    @Prop({ required: true, index: -1 })
+    @Prop()
     firstname: string;
-    @Prop({ required: true, index: -1 })
+    @Prop()
     lastname: string;  
 }
 
-export const LeadsSchema = SchemaFactory.createForClass(Leads);
+export const UsersSchema = SchemaFactory.createForClass(Users);
 
 
 

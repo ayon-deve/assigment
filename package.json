@@ -25,6 +25,7 @@
     "@nestjs/core": "^10.0.0",
     "@nestjs/mongoose": "^10.0.4",
     "@nestjs/platform-express": "^10.0.0",
+    "@nestjs/schedule": "^4.0.1",
     "axios": "^1.6.7",
     "cheerio": "^1.0.0-rc.12",
     "moment": "^2.30.1",

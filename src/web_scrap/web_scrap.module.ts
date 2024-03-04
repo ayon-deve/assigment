@@ -2,13 +2,13 @@ import { Module } from '@nestjs/common';
 import { WebScrapService } from './web_scrap.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
-import { LeadsSchema } from 'src/models/item.schema';
+import { UsersSchema } from 'src/models/item.schema';
 
 @Module({
   imports: [
     ConfigModule,
     MongooseModule.forFeature([
-      { name: 'leads', schema: LeadsSchema },
+      { name: 'users', schema: UsersSchema },
     ])],
   providers: [WebScrapService]
 })

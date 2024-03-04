@@ -1,0 +1,41 @@
+service: beto-backoffice-nest-api
+
+plugins:
+  - serverless-offline
+  - serverless-plugin-common-excludes
+  - serverless-plugin-include-dependencies
+
+provider:
+  iam:
+    role: arn:aws:iam::212344033003:role/lambda
+
+  name: aws
+  runtime: nodejs18.x
+  region: us-east-1
+  memorySize: 180 # optional, in MB, default is 1024
+  timeout: 30
+  versionFunctions: false
+
+  environment:
+    NODE_ENV: ${opt:stage, 'dev'}
+    DEV_MONGO_STR_DEV: mongodb+srv://ayon:*****@cluster0.kimvjfv.mongodb.net/
+
+functions:
+  main:
+    handler: dist/serverless.handler
+    events:
+      - http:
+          method: ANY
+          path: /
+          cors: true
+      - http:
+          method: ANY
+          path: '{proxy+}'
+          cors: true
+  cron:
+    handler: dist/serverless.handler
+    timeout: 900
+
+custom:
+  serverless-offline:
+    noPrependStageInUrl: true
