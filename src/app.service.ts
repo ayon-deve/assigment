@@ -24,7 +24,6 @@ export class AppService {
 
       const anchorTagsLink = await table.evaluate(() => {
         const allAnchorTags = Array.from(document.querySelectorAll('tbody tr td a'))
-        // let value = title[1].innerHTML.replaceAll("_____\t\t\t\"", "_").trim().toLowerCase()
 
 
         return allAnchorTags.map(tag => {
@@ -56,7 +55,7 @@ export class AppService {
         worksheet.getColumn(1).width = 120;  
         worksheet.getColumn(2).width = 70; 
         worksheet.getColumn(3).width = 50;  
-        worksheet.getColumn(3).width = 50;  
+        worksheet.getColumn(4).width = 60;  
 
       });
 
