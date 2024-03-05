@@ -12,8 +12,5 @@ export class AppController {
   }
 
 
-  @Get('products')
-  getProducts(@Query('product') product: string) {
-    return this.appService.getProducts(product);
-  }
+ 
 }

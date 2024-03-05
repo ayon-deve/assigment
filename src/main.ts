@@ -19,8 +19,8 @@ async function bootstrap() {
   );
 
   const config = new DocumentBuilder()
-    .setTitle('Beto Paredes Back Office API')
-    .setDescription('API Documentation for Beto Paredes Back Office')
+    .setTitle('Web Scrapping')
+    .setDescription('API Documentation for Web Scrapping')
     .setVersion('1.0')
     .addBearerAuth(
       {
