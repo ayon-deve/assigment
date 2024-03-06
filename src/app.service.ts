@@ -223,7 +223,7 @@ export class AppService {
             .catch(error => {
               console.error('Error creating Excel file:', error);
             })
-          // await browser.close();
+          await browser.close();
 
         } catch (e) {
           // console.log("eeeeeeeeeeeeeeeeeeeeeeeee", e)
@@ -239,34 +239,35 @@ export class AppService {
       //   console.log('tag:', tag.innerHTML)
       // })
 
-      page.setDefaultNavigationTimeout(2 * 60 * 1000);
-      await Promise.all([
-        page.waitForNavigation(),
-        page.goto(url),
-      ]);
+      // page.setDefaultNavigationTimeout(2 * 60 * 1000);
+      // await Promise.all([
+      //   page.waitForNavigation(),
+      //   page.goto(url),
+      // ]);
 
 
-      await Promise.all([
-        page.waitForNavigation(),
-        page.click('#searchResultSol_notice_43052864709'),
-      ]);
+      // await Promise.all([
+      //   page.waitForNavigation(),
+      //   page.click('#searchResultSol_notice_43052864709'),
+      // ]);
 
-      return await page.$$eval(
-        '.simpleSolResultsItemInfo',
-        (resultItems) => {
-          return resultItems.map((resultItem) => {
+      // return await page.$$eval(
+      //   '.simpleSolResultsItemInfo',
+      //   (resultItems) => {
+      //     return resultItems.map((resultItem) => {
 
-            const title = resultItem.querySelector(
-              '.twoColFields .mets-field-view span',
-            )?.textContent;
+      //       const title = resultItem.querySelector(
+      //         '.twoColFields .mets-field-view span',
+      //       )?.textContent;
 
-            return {
+      //       return {
 
-              title,
-            };
-          });
-        },
-      );
+      //         title,
+      //       };
+      //     });
+      //   },
+      // );
+      return 'Fetch Data Successful'
     } catch (error) {
       console.log('error============>', error)
       throw new Error(`Error fetching data from`);
