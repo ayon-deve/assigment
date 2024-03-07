@@ -7,9 +7,10 @@ import { UsersSchema } from 'src/models/item.schema';
 @Module({
   imports: [
     ConfigModule,
-    MongooseModule.forFeature([
-      { name: 'users', schema: UsersSchema },
-    ])],
+    // MongooseModule.forFeature([
+    //   { name: 'users', schema: UsersSchema },
+    // ])]
+  ],
   providers: [WebScrapService]
 })
 export class WebScrapModule {}

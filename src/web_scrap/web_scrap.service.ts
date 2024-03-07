@@ -6,7 +6,7 @@ import { IUsers } from 'src/models/item.interface';
 
 @Injectable()
 export class WebScrapService {
-    @InjectModel('users') private usersmodal: Model<IUsers>
+    // @InjectModel('users') private usersmodal: Model<IUsers>
 
 
     async fetchData(url: string): Promise<any> {

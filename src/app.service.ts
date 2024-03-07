@@ -223,7 +223,7 @@ export class AppService {
             .catch(error => {
               console.error('Error creating Excel file:', error);
             })
-          await browser.close();
+          // await browser.close();
 
         } catch (e) {
           // console.log("eeeeeeeeeeeeeeeeeeeeeeeee", e)
@@ -267,7 +267,7 @@ export class AppService {
       //     });
       //   },
       // );
-      return 'Fetch Data Successful'
+      // return 'Fetch Data Successful'
     } catch (error) {
       console.log('error============>', error)
       throw new Error(`Error fetching data from`);
