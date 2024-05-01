@@ -17,7 +17,9 @@ export class UsersService {
             // Check if email already exists
             const existingUser = await this.usersmodal.findOne({ email: userData.email.trim().toLowerCase() });
             if (existingUser) {
-                throw new Error('Email already exists');
+                // throw new Error('Email already exists');
+                return { success: false, message: 'Email already exists' };
+
             }
 
             console.log('user data of signup ===', userData);
@@ -139,95 +141,95 @@ export class UsersService {
         }
     }
 
-    async getallcategorydata():Promise<any>{
-        try{
+    async getallcategorydata(): Promise<any> {
+        try {
             const all_data = await this.categorymodal.find()
             return Promise.resolve(all_data)
         }
-        catch(err){
-            console.log('erro',err)
+        catch (err) {
+            console.log('erro', err)
             return Promise.reject(err)
         }
     }
 
-    
+
     async bloglist(condition: any = {}, skip: number = 0, limit: number = 0, sort = {}): Promise<any> {
         try {
             console.log("Params============>>", condition, skip, limit, sort);
-            let aggregation: any =[
+            let aggregation: any = [
                 {
-                  '$match': {
-                    ...condition,
-                  }
-                }, {
-                  '$sort': sort
-                }, {
-                  '$skip': skip
-                }, {
-                  '$limit': limit
-                }, {
-                  '$addFields': {
-                    'question_id_obj': {
-                      '$map': {
-                        'input': '$question_id', 
-                        'as': 'questionId', 
-                        'in': {
-                          '$convert': {
-                            'input': '$$questionId', 
-                            'to': 'objectId', 
-                            'onNull': null, 
-                            'onError': null
-                          }
-                        }
-                      }
+                    '$match': {
+                        ...condition,
                     }
-                  }
                 }, {
-                  '$lookup': {
-                    'from': 'questions', 
-                    'localField': 'question_id_obj', 
-                    'foreignField': '_id', 
-                    'as': 'question_results'
-                  }
+                    '$sort': sort
                 }, {
-                  '$addFields': {
-                    'question': {
-                      '$reduce': {
-                        'input': '$question_results', 
-                        'initialValue': '', 
-                        'in': {
-                          '$concat': [
-                            '$$value', {
-                              '$cond': [
-                                {
-                                  '$gt': [
-                                    {
-                                      '$strLenCP': '$$value'
-                                    }, 0
-                                  ]
-                                }, ', ', ''
-                              ]
-                            }, {
-                              '$concat': [
-                                {
-                                  '$ifNull': [
-                                    '$$this.question', ''
-                                  ]
+                    '$skip': skip
+                }, {
+                    '$limit': limit
+                }, {
+                    '$addFields': {
+                        'question_id_obj': {
+                            '$map': {
+                                'input': '$question_id',
+                                'as': 'questionId',
+                                'in': {
+                                    '$convert': {
+                                        'input': '$$questionId',
+                                        'to': 'objectId',
+                                        'onNull': null,
+                                        'onError': null
+                                    }
                                 }
-                              ]
                             }
-                          ]
                         }
-                      }
                     }
-                  }
                 }, {
-                  '$project': {
-                    'question_id_obj': 0, 
-                    'question_results': 0
-                  }
+                    '$lookup': {
+                        'from': 'questions',
+                        'localField': 'question_id_obj',
+                        'foreignField': '_id',
+                        'as': 'question_results'
+                    }
+                }, {
+                    '$addFields': {
+                        'question': {
+                            '$reduce': {
+                                'input': '$question_results',
+                                'initialValue': '',
+                                'in': {
+                                    '$concat': [
+                                        '$$value', {
+                                            '$cond': [
+                                                {
+                                                    '$gt': [
+                                                        {
+                                                            '$strLenCP': '$$value'
+                                                        }, 0
+                                                    ]
+                                                }, ', ', ''
+                                            ]
+                                        }, {
+                                            '$concat': [
+                                                {
+                                                    '$ifNull': [
+                                                        '$$this.question', ''
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }, {
+                    '$project': {
+                        'question_id_obj': 0,
+                        'question_results': 0
+                    }
                 }
-              ]
+            ]
             console.log('aggregation--------------------->', JSON.stringify(aggregation));
             const res = await this.categorymodal.aggregate(aggregation);
             console.log('res------------------>', res);
