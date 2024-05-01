@@ -19,8 +19,8 @@ async function bootstrap() {
   );
 
   const config = new DocumentBuilder()
-    .setTitle('Web Scrapping')
-    .setDescription('API Documentation for Web Scrapping')
+    .setTitle('Assignment')
+    .setDescription('API Documentation for Assignment')
     .setVersion('1.0')
     .addBearerAuth(
       {

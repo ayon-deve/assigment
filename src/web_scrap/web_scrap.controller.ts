@@ -1,6 +1,8 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { WebScrapService } from './web_scrap.service';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Web scrap')
 @Controller('web-scrap')
 export class WebScrapController {
 
