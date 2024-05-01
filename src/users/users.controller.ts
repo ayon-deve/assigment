@@ -50,12 +50,16 @@ export class UsersController {
                 data.name = data.firstname.trim() + ' ' + data.lastname.trim()
                 data.email = data.email.trim()
             }
+            const responseData = {
+                name: updateToDatabase.results.name ? updateToDatabase.results.name : '',
+                email: updateToDatabase.results.email ? updateToDatabase.results.email : ''
+            };
             reply
                 .status(HttpStatus.OK)
                 .header('Content-Type', 'application/json')
                 .send({
                     'status': 'success',
-                    'results': updateToDatabase.results,
+                    'results': responseData,
                     'message': updateToDatabase.message
                 })
         } catch (error) {
@@ -81,11 +85,11 @@ export class UsersController {
             if (logindata.message == 'Password match. Success!') {
                 value = await this.userService.updatelogintime(logindata.results._id)
                 console.log("value", value);
-                delete logindata.results.password;
-                delete logindata.results._id;
 
             }
 
+            delete logindata.results.password;
+            delete logindata.results._id;
 
             reply
                 .status(HttpStatus.OK)

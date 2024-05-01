@@ -58,11 +58,16 @@ export class UsersService {
                 password: 1,
                 name: 1,
                 phone: 1,
+                status:1
             };
             const email_check = await this.usersmodal.findOne({ email: data.email.trim().toLowerCase() }, projection).lean()
             console.log("email_check-----------", email_check)
 
-
+            if(email_check.status == 0) {
+                return ({
+                    message: "This account is inactive, You can't login",
+                });
+            }
             if (!email_check) {
                 console.log("Email not found");
                 return ({
@@ -85,7 +90,7 @@ export class UsersService {
                             console.log("data------------pass")
 
                             resolve({
-                                message: "Password match. Success!",
+                                message: "Login Successful!",
                                 results: email_check,
                             });
                         } else {
