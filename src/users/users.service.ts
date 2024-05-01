@@ -1,34 +1,116 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { IUsers } from 'src/models/item.interface';
+import mongoose, { Model } from 'mongoose';
+import { ICognitoUser } from 'src/models/users/users.interface';
+import * as bcrypt from 'bcrypt';
+import * as moment from 'moment';
 
 @Injectable()
 export class UsersService {
-    @InjectModel('users') private usersmodal: Model<IUsers>
+    @InjectModel('users') private usersmodal: Model<ICognitoUser>
 
-    async saveCognitoUserToDB(userData: Object): Promise<any> {
+    async saveCognitoUserToDB(userData: any): Promise<any> {
         try {
-          console.log('user data of signup ===', userData);
-    
-          const userRegistration = await this.usersmodal.create(userData);
-    
-          return Promise.resolve({
-            status: HttpStatus.OK,
-            message: 'Registration successful',
-            results: userRegistration,
-          });
-        } catch (error) {
-          console.log('error==================>', error);
-          return Promise.reject({
-            status: HttpStatus.BAD_REQUEST,
-            message:
-              error.errors.length > 0
-                ? error.errors.map((val) => val.longMessage).join(' and ')
-                : 'Registration limit exceed',
-            results: error.message,
-          });
-        }
-      }
 
+            // Check if email already exists
+            const existingUser = await this.usersmodal.findOne({ email: userData.email.trim().toLowerCase() });
+            if (existingUser) {
+                throw new Error('Email already exists');
+            }
+
+            console.log('user data of signup ===', userData);
+            const saltRounds = 10;
+            const hashedPassword = await bcrypt.hash(userData.password, saltRounds);
+            userData.password = hashedPassword;
+
+            const userRegistration = await this.usersmodal.create(userData);
+            console.log("user registration ===", userRegistration)
+
+            return Promise.resolve({
+                status: HttpStatus.OK,
+                message: 'Registration successful',
+                results: userRegistration,
+            });
+        } catch (error) {
+            console.log('error==================>', error);
+            return Promise.reject({
+                status: HttpStatus.BAD_REQUEST,
+                message:
+                    error.errors.length > 0
+                        ? error.errors.map((val) => val.longMessage).join(' and ')
+                        : 'Registration limit exceed',
+                results: error.message,
+            });
+        }
+    }
+
+    async logincheck(data: any): Promise<any> {
+        try {
+            console.log("data------------", data)
+            const projection = {
+                _id: 1,
+                email: 1,
+                password: 1,
+                name:1,
+                phone:1,
+                last_login_time:1
+            };
+            const email_check = await this.usersmodal.findOne({ email: data.email.trim().toLowerCase()},projection).lean()
+            console.log("email_check-----------", email_check)
+            
+
+            if (!email_check) {
+                console.log("Email not found");
+                return ({
+                    message: 'Email not found',
+                   
+                });
+            } else {
+                const enteredPassword = data.password.trim();
+                const hashedPassword = email_check.password;
+                return new Promise((resolve, reject) => {
+                    bcrypt.compare(enteredPassword, hashedPassword, function (err, result) {
+
+                        if (err) {
+                            console.log("data------------err")
+                            resolve({
+                                message: 'Error comparing passwords:',
+                                results: err,
+                            });
+                        } else if (result) {
+                            console.log("data------------pass")
+                            
+                            resolve({
+                                message: "Password match. Success!",
+                                results: email_check,
+                            });
+                        } else {
+                            console.log("data------------12")
+
+                            resolve({
+                                message: "Password does not match. Not success."
+                            });
+                        }
+                    });
+                })
+            }
+
+        }
+        catch (error) {
+            console.log('error--------', error)
+            return Promise.reject(error)
+        }
+    }
+
+    async updatelogintime(data:any):Promise<any>{
+        try{
+            const update_data = await this.usersmodal.updateOne({_id:new mongoose.Types.ObjectId( data._id)},{$set:{last_login_time:moment().valueOf()}})
+            console.log("update_data--------",update_data)
+            return Promise.resolve(update_data)
+        }
+        catch(err){
+            console.log("error",err)
+            return Promise.reject(err)
+        }
+    }
 }

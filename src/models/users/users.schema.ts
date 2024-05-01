@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as moment from 'moment'
-@Schema({ collection: 'cognito_user_data', versionKey: false })
+@Schema({ collection: 'users', versionKey: false })
 export class CognitoUser {
 
   @Prop()
@@ -13,7 +13,8 @@ export class CognitoUser {
   email: string;
   @Prop()
   phone: string;
-
+  @Prop()
+  password: string;
   @Prop()
   city: string;
   @Prop()
