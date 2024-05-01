@@ -34,16 +34,5 @@ export class Registration {
   @ApiProperty({ example: '4 Elgin Rd.', description: 'Address' })
   address: string;
 
-  @ApiProperty({ example: 'is_admin', description: 'user_type' })
-  user_type: string;
 
-  @ApiProperty({ example: '', description: 'yourself' })
-  yourself: string;
-
-  @ApiProperty({example: 0, description:''})
-  has_betoparedes_access:number;
-
-  @ApiProperty()
-  calendar_id:number;
-  
 }

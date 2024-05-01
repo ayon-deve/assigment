@@ -5,6 +5,8 @@ import { FastifyReply, FastifyRequest } from 'fastify';
 import { Registration } from 'src/entities/useradd.entitie';
 import * as moment from 'moment';
 import { Login } from 'src/entities/login.entitie';
+import { fetchdata } from 'src/entities/view_profile.entitie';
+import { updateProfile } from 'src/entities/update_profile.entitie';
 
 @ApiTags('users')
 @Controller('users')
@@ -35,7 +37,7 @@ export class UsersController {
                 address: body.address,
                 created_on: moment().valueOf(),
                 last_login_time: 0,
-                yourself: body.yourself
+                
 
             }
 
@@ -86,10 +88,10 @@ export class UsersController {
             if(logindata.message == 'Password match. Success!'){
                 value = await this.userService.updatelogintime(logindata.results._id)   
                 console.log("value",value);
+                delete logindata.results.password;
+                delete logindata.results._id;
                 
             }
-            delete logindata.results.password;
-            delete logindata.results._id;
 
 
             reply
@@ -97,8 +99,48 @@ export class UsersController {
                 .header('Content-Type', 'application/json')
                 .send({
                     'status': 'success',
-                    'results': logindata.results,
+                    'results': logindata.results? logindata.results: [],
                     'message': logindata.message
+                })
+
+        } catch (error) {
+            return { success: false, error: error.message };
+        }
+    }
+
+    @Post('view-user-profile')
+    async fetchdata(@Body() body: fetchdata, @Req() request: FastifyRequest, @Res() reply: FastifyReply): Promise<any> {
+        try {
+            const fetchvalue = await this.userService.viewprofile(body);
+            if(fetchdata.length > 0) delete fetchvalue[0].password
+            console.log("fetchvalue---------", fetchvalue)
+          
+            reply
+                .status(HttpStatus.OK)
+                .header('Content-Type', 'application/json')
+                .send({
+                    'status': 'successfully fetch',
+                    'results': fetchvalue,
+                })
+
+        } catch (error) {
+            return { success: false, error: error.message };
+        }
+    }
+
+    @Post('edit-user-profile')
+    async updatedata(@Body() body: updateProfile, @Req() request: FastifyRequest, @Res() reply: FastifyReply): Promise<any> {
+        try {
+            const fetchvalue = await this.userService.updateprofile(body,body._id);
+            if(fetchdata.length > 0) delete fetchvalue[0].password
+            console.log("fetchvalue---------", fetchvalue)
+          
+            reply
+                .status(HttpStatus.OK)
+                .header('Content-Type', 'application/json')
+                .send({
+                    'status': 'successfully fetch',
+                    'results': fetchvalue,
                 })
 
         } catch (error) {

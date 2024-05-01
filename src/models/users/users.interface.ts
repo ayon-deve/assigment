@@ -17,6 +17,7 @@ export interface ICognitoUser extends Document {
   readonly created_on: number;
   readonly last_login_time: number;
   readonly password: number;
+  readonly image: object;
   
 //   readonly user_type: string;
 //   readonly agent_code: string;

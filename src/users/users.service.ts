@@ -51,19 +51,18 @@ export class UsersService {
                 _id: 1,
                 email: 1,
                 password: 1,
-                name:1,
-                phone:1,
-                last_login_time:1
+                name: 1,
+                phone: 1,
             };
-            const email_check = await this.usersmodal.findOne({ email: data.email.trim().toLowerCase()},projection).lean()
+            const email_check = await this.usersmodal.findOne({ email: data.email.trim().toLowerCase() }, projection).lean()
             console.log("email_check-----------", email_check)
-            
+
 
             if (!email_check) {
                 console.log("Email not found");
                 return ({
                     message: 'Email not found',
-                   
+
                 });
             } else {
                 const enteredPassword = data.password.trim();
@@ -79,14 +78,13 @@ export class UsersService {
                             });
                         } else if (result) {
                             console.log("data------------pass")
-                            
+
                             resolve({
                                 message: "Password match. Success!",
                                 results: email_check,
                             });
                         } else {
                             console.log("data------------12")
-
                             resolve({
                                 message: "Password does not match. Not success."
                             });
@@ -102,14 +100,39 @@ export class UsersService {
         }
     }
 
-    async updatelogintime(data:any):Promise<any>{
-        try{
-            const update_data = await this.usersmodal.updateOne({_id:new mongoose.Types.ObjectId( data._id)},{$set:{last_login_time:moment().valueOf()}})
-            console.log("update_data--------",update_data)
+    async updatelogintime(data: any): Promise<any> {
+        try {
+            const update_data = await this.usersmodal.updateOne({ _id: new mongoose.Types.ObjectId(data._id) }, { $set: { last_login_time: moment().valueOf() } })
+            console.log("update_data--------", update_data)
             return Promise.resolve(update_data)
         }
-        catch(err){
-            console.log("error",err)
+        catch (err) {
+            console.log("error", err)
+            return Promise.reject(err)
+        }
+    }
+
+    async viewprofile(data: any): Promise<any> {
+        try {
+            const fetchdata = await this.usersmodal.find({ _id: new mongoose.Types.ObjectId(data._id) }).lean()
+            console.log("fetcdata", fetchdata)
+            return Promise.resolve(fetchdata)
+        }
+        catch (error) {
+            console.log('err', error)
+            return Promise.reject(error)
+        }
+
+    }
+
+    async updateprofile(data: any, _id: any): Promise<any> {
+        try {
+            const response = await this.usersmodal.findByIdAndUpdate(_id, { ...data, updated_on: moment().valueOf() }, { new: true }).lean()
+            console.log(response)
+            return Promise.resolve(response);
+        }
+        catch (err) {
+            console.log("err", err)
             return Promise.reject(err)
         }
     }
