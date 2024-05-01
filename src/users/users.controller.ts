@@ -28,7 +28,7 @@ export class UsersController {
                 firstname: body.firstname.trim(),
                 lastname: body.lastname.trim(),
                 name: `${body.firstname.trim()} ${body.lastname.trim()}`,
-                email: body.email.toLowerCase(),
+                email: body.email.toLowerCase().trim(),
                 password: body.password.trim(),
                 phone: body.phone,
                 state: body.state,
@@ -38,26 +38,18 @@ export class UsersController {
                 address: body.address,
                 created_on: moment().valueOf(),
                 last_login_time: 0,
-                
+
 
             }
 
             const updateToDatabase = await this.userService.saveCognitoUserToDB(data)
             console.log("updateToDatabase---", updateToDatabase)
 
+
             if (updateToDatabase && Object.keys(updateToDatabase).length > 0) {
                 data.name = data.firstname.trim() + ' ' + data.lastname.trim()
                 data.email = data.email.trim()
-                data.firstname = data.firstname.trim(),
-                    data.lastname = data.lastname.trim(),
-                    data.password = data.password.trim(),
-                    data.city = data.city.trim(),
-                    data.state = data.state.trim(),
-                    data.status = data.status,
-                    data.zip = data.zip,
-                    data.phone = data.phone
             }
-
             reply
                 .status(HttpStatus.OK)
                 .header('Content-Type', 'application/json')
@@ -85,13 +77,13 @@ export class UsersController {
             const logindata = await this.userService.logincheck(body);
 
             console.log("logindata---------", logindata)
-            let value 
-            if(logindata.message == 'Password match. Success!'){
-                value = await this.userService.updatelogintime(logindata.results._id)   
-                console.log("value",value);
+            let value
+            if (logindata.message == 'Password match. Success!') {
+                value = await this.userService.updatelogintime(logindata.results._id)
+                console.log("value", value);
                 delete logindata.results.password;
                 delete logindata.results._id;
-                
+
             }
 
 
@@ -100,7 +92,7 @@ export class UsersController {
                 .header('Content-Type', 'application/json')
                 .send({
                     'status': 'success',
-                    'results': logindata.results? logindata.results: [],
+                    'results': logindata.results ? logindata.results : [],
                     'message': logindata.message
                 })
 
@@ -113,9 +105,9 @@ export class UsersController {
     async fetchdata(@Body() body: fetchdata, @Req() request: FastifyRequest, @Res() reply: FastifyReply): Promise<any> {
         try {
             const fetchvalue = await this.userService.viewprofile(body);
-            if(fetchdata.length > 0) delete fetchvalue[0].password
+            if (fetchdata.length > 0) delete fetchvalue[0].password
             console.log("fetchvalue---------", fetchvalue)
-          
+
             reply
                 .status(HttpStatus.OK)
                 .header('Content-Type', 'application/json')
@@ -132,10 +124,10 @@ export class UsersController {
     @Post('edit-user-profile')
     async updatedata(@Body() body: updateProfile, @Req() request: FastifyRequest, @Res() reply: FastifyReply): Promise<any> {
         try {
-            const fetchvalue = await this.userService.updateprofile(body,body._id);
-            if(fetchdata.length > 0) delete fetchvalue[0].password
+            const fetchvalue = await this.userService.updateprofile(body, body._id);
+            if (fetchdata.length > 0) delete fetchvalue[0].password
             console.log("fetchvalue---------", fetchvalue)
-          
+
             reply
                 .status(HttpStatus.OK)
                 .header('Content-Type', 'application/json')
@@ -153,7 +145,7 @@ export class UsersController {
         try {
             const fetchvalue = await this.userService.getallcategorydata();
             console.log("fetchvalue---------", fetchvalue)
-          
+
             reply
                 .status(HttpStatus.OK)
                 .header('Content-Type', 'application/json')

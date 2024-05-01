@@ -29,6 +29,7 @@ export class UsersService {
 
             const userRegistration = await this.usersmodal.create(userData);
             console.log("user registration ===", userRegistration)
+       
 
             return Promise.resolve({
                 status: HttpStatus.OK,
