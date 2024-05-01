@@ -4,10 +4,12 @@ import mongoose, { Model } from 'mongoose';
 import { ICognitoUser } from 'src/models/users/users.interface';
 import * as bcrypt from 'bcrypt';
 import * as moment from 'moment';
+import { Icategory } from 'src/models/category/category.interface';
 
 @Injectable()
 export class UsersService {
     @InjectModel('users') private usersmodal: Model<ICognitoUser>
+    @InjectModel('category') private categorymodal: Model<Icategory>
 
     async saveCognitoUserToDB(userData: any): Promise<any> {
         try {
@@ -136,4 +138,106 @@ export class UsersService {
             return Promise.reject(err)
         }
     }
+
+    async getallcategorydata():Promise<any>{
+        try{
+            const all_data = await this.categorymodal.find()
+            return Promise.resolve(all_data)
+        }
+        catch(err){
+            console.log('erro',err)
+            return Promise.reject(err)
+        }
+    }
+
+    
+    async bloglist(condition: any = {}, skip: number = 0, limit: number = 0, sort = {}): Promise<any> {
+        try {
+            console.log("Params============>>", condition, skip, limit, sort);
+            let aggregation: any =[
+                {
+                  '$match': {
+                    ...condition,
+                  }
+                }, {
+                  '$sort': sort
+                }, {
+                  '$skip': skip
+                }, {
+                  '$limit': limit
+                }, {
+                  '$addFields': {
+                    'question_id_obj': {
+                      '$map': {
+                        'input': '$question_id', 
+                        'as': 'questionId', 
+                        'in': {
+                          '$convert': {
+                            'input': '$$questionId', 
+                            'to': 'objectId', 
+                            'onNull': null, 
+                            'onError': null
+                          }
+                        }
+                      }
+                    }
+                  }
+                }, {
+                  '$lookup': {
+                    'from': 'questions', 
+                    'localField': 'question_id_obj', 
+                    'foreignField': '_id', 
+                    'as': 'question_results'
+                  }
+                }, {
+                  '$addFields': {
+                    'question': {
+                      '$reduce': {
+                        'input': '$question_results', 
+                        'initialValue': '', 
+                        'in': {
+                          '$concat': [
+                            '$$value', {
+                              '$cond': [
+                                {
+                                  '$gt': [
+                                    {
+                                      '$strLenCP': '$$value'
+                                    }, 0
+                                  ]
+                                }, ', ', ''
+                              ]
+                            }, {
+                              '$concat': [
+                                {
+                                  '$ifNull': [
+                                    '$$this.question', ''
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }, {
+                  '$project': {
+                    'question_id_obj': 0, 
+                    'question_results': 0
+                  }
+                }
+              ]
+            console.log('aggregation--------------------->', JSON.stringify(aggregation));
+            const res = await this.categorymodal.aggregate(aggregation);
+            console.log('res------------------>', res);
+            return Promise.resolve(res)
+
+        }
+        catch (error) {
+            console.log('error------------', error)
+            return Promise.reject(error)
+        }
+    }
+
 }

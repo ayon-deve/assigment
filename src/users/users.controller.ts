@@ -1,4 +1,4 @@
-import { Body, Controller, HttpStatus, Post, Req, Res } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Post, Req, Res } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { FastifyReply, FastifyRequest } from 'fastify';
@@ -7,6 +7,7 @@ import * as moment from 'moment';
 import { Login } from 'src/entities/login.entitie';
 import { fetchdata } from 'src/entities/view_profile.entitie';
 import { updateProfile } from 'src/entities/update_profile.entitie';
+import { listBody } from 'src/entities/list.entity';
 
 @ApiTags('users')
 @Controller('users')
@@ -146,5 +147,85 @@ export class UsersController {
         } catch (error) {
             return { success: false, error: error.message };
         }
+    }
+    @Get('all-category')
+    async allcatgory(@Req() request: FastifyRequest, @Res() reply: FastifyReply): Promise<any> {
+        try {
+            const fetchvalue = await this.userService.getallcategorydata();
+            console.log("fetchvalue---------", fetchvalue)
+          
+            reply
+                .status(HttpStatus.OK)
+                .header('Content-Type', 'application/json')
+                .send({
+                    'status': 'successfully fetch',
+                    'results': fetchvalue,
+                })
+
+        } catch (error) {
+            return { success: false, error: error.message };
+        }
+    }
+
+
+    @Post('list-of-category')
+    async bloglist(@Body() data: listBody, @Req() request: FastifyRequest, @Res() reply: FastifyReply) {
+        console.log("data blog list ===========>", data);
+        try {
+            const limit = data?.condition?.limit ? data.condition.limit : 5;
+            const skip = data?.condition?.skip ? data.condition.skip : 0;
+            const sortVal = data?.sort?.type == "desc" ? -1 : 1
+            const sortField = data?.sort?.field ? data.sort.field : "created_on";
+            const condition = data?.searchcondition && typeof (data.searchcondition) == 'object' ? data.searchcondition : {};
+            console.log("data count", condition);
+            const { ObjectId } = require('mongodb');
+            for (let key in condition) {
+                console.log("search id =======>", condition[key][0]);
+                for (let key in condition) {
+                    if (typeof (condition[key]) == 'object' && condition[key]['$regex']) {
+                        condition[key]['$options'] = 'i'
+                    }
+                    if (key == 'priority' && condition['priority']['$regex'] && !isNaN(condition['priority']['$regex'])) {
+                        condition['priority'] = Number(condition['priority']['$regex'])
+                    }
+                }
+                for (let k in condition[key]) {
+                    if (
+                        condition[key] && typeof condition[key] !== 'string' && condition[key].length > 0 &&
+                        condition[key][k].$or[0]._id
+                    ) {
+                        condition[key][k].$or[0]._id = new ObjectId(condition[key][k].$or[0]._id,);
+                    }
+                }
+
+
+            }
+            const response = await this.userService.bloglist(condition, skip, limit, { [sortField]: sortVal })
+            reply
+                .status(HttpStatus.OK)
+                .header('Content-Type', 'application/json')
+                .send({
+                    status: "success",
+                    message: "successful",
+                    results: {
+                        res: response
+                    }
+
+                })
+
+        } catch (error) {
+            console.log("error=======+>", error);
+            reply
+                .status(error.status ? error.status : HttpStatus.BAD_REQUEST)
+                .header('Content-Type', 'application/json')
+                .send({
+                    'status': 'error',
+                    'results': error.results ? error.results : undefined,
+                    'message': error.message ? error.message : 'Something Went Wrong !!'
+                })
+
+        }
+
+
     }
 }
