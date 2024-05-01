@@ -63,7 +63,7 @@ export class UsersService {
             const email_check = await this.usersmodal.findOne({ email: data.email.trim().toLowerCase() }, projection).lean()
             console.log("email_check-----------", email_check)
 
-            if(email_check.status == 0) {
+            if(email_check.status == 0) {               ///////////////////////this for user status is active or not/////////
                 return ({
                     message: "This account is inactive, You can't login",
                 });
