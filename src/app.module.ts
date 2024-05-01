@@ -1,8 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { WebScrapController } from './web_scrap/web_scrap.controller';
-import { WebScrapModule } from './web_scrap/web_scrap.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -24,7 +22,6 @@ import { UsersModule } from './users/users.module';
       }),
     }),
     ScheduleModule.forRoot(),
-    WebScrapModule,
     UsersModule,
     
   ],
